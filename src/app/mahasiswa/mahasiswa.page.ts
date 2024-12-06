@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../service/api.service';
 import { ModalController, AlertController } from '@ionic/angular';
+import { AuthenticationService } from '../services/authentication.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-mahasiswa',
@@ -10,7 +12,7 @@ import { ModalController, AlertController } from '@ionic/angular';
 export class MahasiswaPage implements OnInit {
   dataMahasiswa: any;
 
-  constructor(private api: ApiService, private modal: ModalController, private alertCtrl: AlertController) { }
+  constructor(private api: ApiService, private modal: ModalController, private alertCtrl: AlertController, private authService: AuthenticationService, private router: Router) { }
 
   ngOnInit() {
     this.getMahasiswa();
@@ -31,12 +33,12 @@ export class MahasiswaPage implements OnInit {
   modalTambah: any;
   id: any;
   nama: any;
-  jurusan: any;
+  deskripsi: any;
 
   resetModal() {
     this.id = null;
     this.nama = '';
-    this.jurusan = '';
+    this.deskripsi = '';
   }
 
   openModalTambah(isOpen: boolean) {
@@ -54,33 +56,33 @@ export class MahasiswaPage implements OnInit {
   }
 
   tambahMahasiswa() {
-    if (this.nama != '' && this.jurusan != '') {
+    if (this.nama != '' && this.deskripsi != '') {
       let data = {
         nama: this.nama,
-        jurusan: this.jurusan,
+        deskripsi: this.deskripsi,
       }
       this.api.tambah(data, 'tambah.php')
         .subscribe({
           next: (hasil: any) => {
             this.resetModal();
-            console.log('berhasil tambah mahasiswa');
+            console.log('berhasil tambah pahlawan');
             this.getMahasiswa();
             this.modalTambah = false;
             this.modal.dismiss();
           },
           error: (err: any) => {
-            console.log('gagal tambah mahasiswa');
+            console.log('gagal tambah');
           }
         })
     } else {
-      console.log('gagal tambah mahasiswa karena masih ada data yg kosong');
+      console.log('gagal tambah karena masih ada data yg kosong');
     }
   }
 
   async confirmHapusMahasiswa(id: any) {
     const alert = await this.alertCtrl.create({
       header: 'Konfirmasi Hapus',
-      message: 'Apakah Anda yakin ingin menghapus data mahasiswa ini?',
+      message: 'Apakah Anda yakin ingin menghapus data ini?',
       buttons: [
         {
           text: 'Batal',
@@ -122,7 +124,7 @@ export class MahasiswaPage implements OnInit {
           let mahasiswa = hasil;
           this.id = mahasiswa.id;
           this.nama = mahasiswa.nama;
-          this.jurusan = mahasiswa.jurusan;
+          this.deskripsi = mahasiswa.deskripsi;
         },
         error: (error: any) => {
           console.log('gagal ambil data');
@@ -144,7 +146,7 @@ export class MahasiswaPage implements OnInit {
     let data = {
       id: this.id,
       nama: this.nama,
-      jurusan: this.jurusan
+      deskripsi: this.deskripsi
     }
     this.api.edit(data, 'edit.php')
       .subscribe({
@@ -161,4 +163,9 @@ export class MahasiswaPage implements OnInit {
         }
       })
   }
+  logout() {
+    this.authService.logout();
+    this.router.navigateByUrl('/login');
+  }
+  
 }

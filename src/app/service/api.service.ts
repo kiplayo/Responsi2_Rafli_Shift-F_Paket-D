@@ -10,7 +10,7 @@ export class ApiService {
   constructor(private http: HttpClient) { }
 
   apiURL() {
-    return 'http://localhost/mahasiswa';
+    return 'http://localhost/responsi2';
   }
 
   tambah(data: any, endpoint: string) {
